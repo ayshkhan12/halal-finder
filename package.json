@@ -1,0 +1,13 @@
+{
+  "name": "halal-finder",
+  "private": true,
+  "description": "Halal Finder: find certified halal restaurants and food products near you.",
+  "scripts": {
+    "setup": "npm --prefix backend install && npm --prefix mobile install",
+    "dev": "node scripts/dev.js",
+    "api": "npm --prefix backend run dev",
+    "app": "npm --prefix mobile start",
+    "web": "npm --prefix mobile run web",
+    "test": "npm --prefix backend test && npm --prefix mobile run typecheck"
+  }
+}

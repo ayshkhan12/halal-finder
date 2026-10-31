@@ -1,0 +1,25 @@
+{
+  "name": "halal-finder-api",
+  "version": "2.0.0",
+  "private": true,
+  "description": "REST API for the Halal Finder mobile app",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning src/server.js",
+    "dev": "node --disable-warning=ExperimentalWarning --watch src/server.js",
+    "db:reset": "node --disable-warning=ExperimentalWarning src/db/reset.js",
+    "test": "node --disable-warning=ExperimentalWarning --test"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.0.0",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "zod": "^4.0.0"
+  }
+}

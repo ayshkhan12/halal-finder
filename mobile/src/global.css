@@ -1,0 +1,41 @@
+/* Web-only global styles. Native platforms ignore this file. */
+
+/* Visible keyboard focus for every interactive element (WCAG 2.4.7 / 2.4.11). */
+:focus-visible {
+  outline: 3px solid #0b3a27;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :focus-visible {
+    outline-color: #f0d98a;
+  }
+}
+
+/* Respect "reduce motion" on the web too. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.hf-pin {
+  background: transparent;
+  border: 0;
+}
+/* Keep Leaflet's zoom buttons clear of the app's floating top bar, and large enough to tap. */
+.leaflet-top {
+  margin-top: 64px;
+}
+.leaflet-touch .leaflet-bar a {
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+}
+.leaflet-container {
+  font-family: 'DMSans_400Regular', system-ui, sans-serif;
+}

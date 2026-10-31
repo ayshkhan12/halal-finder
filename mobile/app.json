@@ -1,0 +1,67 @@
+{
+  "expo": {
+    "name": "Halal Finder",
+    "slug": "halal-finder",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "halalfinder",
+    "userInterfaceStyle": "automatic",
+    "description": "Find certified halal restaurants, butchers and grocers near you, and check halal certification on food products.",
+    "ios": {
+      "bundleIdentifier": "com.ayshkhan.halalfinder",
+      "supportsTablet": true,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.ayshkhan.halalfinder",
+      "adaptiveIcon": {
+        "backgroundColor": "#0F4730",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "output": "single",
+      "favicon": "./assets/images/favicon.png",
+      "name": "Halal Finder",
+      "themeColor": "#0F4730",
+      "backgroundColor": "#FAF7F0"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#0F4730",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 120
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Halal Finder uses your location to show certified halal places closest to you."
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Halal Finder uses the camera to read barcodes so you can check a product's halal certificate.",
+          "recordAudioAndroid": false
+        }
+      ],
+      "expo-secure-store",
+      "expo-font",
+      "expo-web-browser"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}

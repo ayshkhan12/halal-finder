@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Halal Finder - Find Halal Restaurants & Products Near You</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-logo" onclick="showSection('home')">
+                <i class="fas fa-utensils"></i>
+                Halal Finder
+            </a>
+            <div class="nav-menu" id="nav-menu">
+                <a href="#" class="nav-link active" data-section="home" onclick="showSection('home')">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="#" class="nav-link" data-section="restaurants" onclick="showSection('restaurants')">
+                    <i class="fas fa-store"></i> Restaurants
+                </a>
+                <a href="#" class="nav-link" data-section="products" onclick="showSection('products')">
+                    <i class="fas fa-shopping-basket"></i> Products
+                </a>
+                <a href="#" class="nav-link" data-section="nearme" onclick="showSection('nearme')">
+                    <i class="fas fa-map-marked-alt"></i> Near Me
+                </a>
+                <a href="#" class="nav-link auth-only" data-section="favorites" onclick="showSection('favorites')" style="display: none;">
+                    <i class="fas fa-heart"></i> Favorites
+                </a>
+            </div>
+            <div class="nav-auth">
+                <div class="guest-only">
+                    <button class="btn btn-outline" onclick="showModal('login')">Login</button>
+                    <button class="btn btn-primary" onclick="showModal('register')">Register</button>
+                </div>
+                <div class="auth-only" style="display: none;">
+                    <span class="user-greeting">Hello, <span id="user-name">User</span>!</span>
+                    <button class="btn btn-outline" onclick="logout()">Logout</button>
+                </div>
+            </div>
+            <button class="nav-toggle" id="nav-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Home Section -->
+        <section id="home-section" class="section active">
+            <div class="hero">
+                <div class="hero-content">
+                    <h1>Find Halal Food Near You</h1>
+                    <p>Discover certified halal restaurants and food products in your area</p>
+                    <div class="hero-search">
+                        <div class="search-box">
+                            <select id="hero-country" class="search-select">
+                                <option value="">Select Country</option>
+                            </select>
+                            <select id="hero-city" class="search-select">
+                                <option value="">Select City</option>
+                            </select>
+                            <button class="btn btn-primary btn-search" onclick="heroSearch()">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="features">
+                <div class="container">
+                    <h2 class="section-title">Why Choose Halal Finder?</h2>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-certificate"></i>
+                            </div>
+                            <h3>Certified Halal</h3>
+                            <p>All restaurants and products listed are verified by recognized halal certification bodies</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <h3>Location Based</h3>
+                            <p>Find halal options near you with our powerful location-based search</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <h3>Ratings & Reviews</h3>
+                            <p>See ratings to make informed decisions about where to eat</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <h3>Save Favorites</h3>
+                            <p>Create an account to save your favorite restaurants and products</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="popular-section">
+                <div class="container">
+                    <h2 class="section-title">Popular Halal Restaurants</h2>
+                    <div class="cards-grid" id="popular-restaurants">
+                        <!-- Populated by JS -->
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-outline" onclick="showSection('restaurants')">View All Restaurants</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Restaurants Section -->
+        <section id="restaurants-section" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Halal Restaurants</h1>
+                    <p>Find certified halal restaurants in your area</p>
+                </div>
+
+                <div class="filters-container">
+                    <div class="filters">
+                        <div class="filter-group">
+                            <label>Country</label>
+                            <select id="filter-country" onchange="loadCities(); filterRestaurants()">
+                                <option value="">All Countries</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>City</label>
+                            <select id="filter-city" onchange="filterRestaurants()">
+                                <option value="">All Cities</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Cuisine</label>
+                            <select id="filter-cuisine" onchange="filterRestaurants()">
+                                <option value="">All Cuisines</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Certification</label>
+                            <select id="filter-certification" onchange="filterRestaurants()">
+                                <option value="">All Certifications</option>
+                            </select>
+                        </div>
+                        <div class="filter-group search-group">
+                            <label>Search</label>
+                            <div class="search-input">
+                                <input type="text" id="search-restaurants" placeholder="Search restaurants..." onkeyup="debounceSearch(filterRestaurants)">
+                                <i class="fas fa-search"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="results-container">
+                    <div class="results-header">
+                        <span id="restaurant-count">0 restaurants found</span>
+                    </div>
+                    <div class="cards-grid" id="restaurants-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Section -->
+        <section id="products-section" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Halal Products</h1>
+                    <p>Discover certified halal food products</p>
+                </div>
+
+                <div class="filters-container">
+                    <div class="filters">
+                        <div class="filter-group">
+                            <label>Category</label>
+                            <select id="filter-category" onchange="filterProducts()">
+                                <option value="">All Categories</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Available In</label>
+                            <select id="filter-product-country" onchange="filterProducts()">
+                                <option value="">All Countries</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Certification</label>
+                            <select id="filter-product-certification" onchange="filterProducts()">
+                                <option value="">All Certifications</option>
+                            </select>
+                        </div>
+                        <div class="filter-group search-group">
+                            <label>Search</label>
+                            <div class="search-input">
+                                <input type="text" id="search-products" placeholder="Search products..." onkeyup="debounceSearch(filterProducts)">
+                                <i class="fas fa-search"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="results-container">
+                    <div class="results-header">
+                        <span id="product-count">0 products found</span>
+                    </div>
+                    <div class="cards-grid" id="products-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Near Me Section - Map -->
+        <section id="nearme-section" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Halal Places Near Me</h1>
+                    <p>Find certified halal restaurants close to your location</p>
+                </div>
+
+                <div class="map-controls">
+                    <button class="btn btn-primary" id="locate-btn" onclick="locateUser()">
+                        <i class="fas fa-location-crosshairs"></i> Find My Location
+                    </button>
+                    <div class="map-radius-control">
+                        <label>Search Radius:</label>
+                        <select id="map-radius" onchange="updateMapRadius()">
+                            <option value="5">5 km</option>
+                            <option value="10" selected>10 km</option>
+                            <option value="25">25 km</option>
+                            <option value="50">50 km</option>
+                        </select>
+                    </div>
+                    <span id="location-status" class="location-status"></span>
+                </div>
+
+                <div class="map-container">
+                    <div id="map"></div>
+                </div>
+
+                <div class="nearby-restaurants">
+                    <h3><i class="fas fa-utensils"></i> Nearby Halal Restaurants</h3>
+                    <div class="cards-grid" id="nearby-restaurants-grid">
+                        <div class="empty-state">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <h3>Enable location to see nearby places</h3>
+                            <p>Click "Find My Location" to discover halal restaurants near you</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Favorites Section -->
+        <section id="favorites-section" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>My Favorites</h1>
+                    <p>Your saved restaurants and products</p>
+                </div>
+
+                <div class="favorites-tabs">
+                    <button class="tab-btn active" onclick="showFavoritesTab('restaurants')">
+                        <i class="fas fa-store"></i> Restaurants
+                    </button>
+                    <button class="tab-btn" onclick="showFavoritesTab('products')">
+                        <i class="fas fa-shopping-basket"></i> Products
+                    </button>
+                </div>
+
+                <div class="cards-grid" id="favorites-grid">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="empty-state" id="favorites-empty" style="display: none;">
+                    <i class="fas fa-heart"></i>
+                    <h3>No favorites yet</h3>
+                    <p>Start exploring and save your favorite halal restaurants and products!</p>
+                    <button class="btn btn-primary" onclick="showSection('restaurants')">Explore Restaurants</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Login Modal -->
+    <div class="modal" id="login-modal">
+        <div class="modal-overlay" onclick="closeModal('login')"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('login')">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-header">
+                <h2>Welcome Back</h2>
+                <p>Login to your Halal Finder account</p>
+            </div>
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" required placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" required placeholder="Enter your password">
+                </div>
+                <div class="form-error" id="login-error"></div>
+                <button type="submit" class="btn btn-primary btn-full">Login</button>
+            </form>
+            <div class="modal-footer">
+                <p>Don't have an account? <a href="#" onclick="switchModal('register')">Register</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal" id="register-modal">
+        <div class="modal-overlay" onclick="closeModal('register')"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('register')">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-header">
+                <h2>Create Account</h2>
+                <p>Join Halal Finder today</p>
+            </div>
+            <form id="register-form" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label for="register-name">Full Name</label>
+                    <input type="text" id="register-name" required placeholder="Enter your full name">
+                </div>
+                <div class="form-group">
+                    <label for="register-email">Email</label>
+                    <input type="email" id="register-email" required placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Password</label>
+                    <input type="password" id="register-password" required placeholder="Create a password" minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="register-country">Country</label>
+                    <select id="register-country">
+                        <option value="United Kingdom">United Kingdom</option>
+                        <option value="United States">United States</option>
+                        <option value="United Arab Emirates">United Arab Emirates</option>
+                        <option value="Malaysia">Malaysia</option>
+                        <option value="Indonesia">Indonesia</option>
+                        <option value="South Africa">South Africa</option>
+                    </select>
+                </div>
+                <div class="form-error" id="register-error"></div>
+                <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+            </form>
+            <div class="modal-footer">
+                <p>Already have an account? <a href="#" onclick="switchModal('login')">Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Restaurant Detail Modal -->
+    <div class="modal" id="restaurant-modal">
+        <div class="modal-overlay" onclick="closeModal('restaurant')"></div>
+        <div class="modal-content modal-large">
+            <button class="modal-close" onclick="closeModal('restaurant')">
+                <i class="fas fa-times"></i>
+            </button>
+            <div id="restaurant-detail">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Detail Modal -->
+    <div class="modal" id="product-modal">
+        <div class="modal-overlay" onclick="closeModal('product')"></div>
+        <div class="modal-content modal-large">
+            <button class="modal-close" onclick="closeModal('product')">
+                <i class="fas fa-times"></i>
+            </button>
+            <div id="product-detail">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toast-message">Success!</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3><i class="fas fa-utensils"></i> Halal Finder</h3>
+                    <p>Your trusted source for finding halal certified restaurants and food products worldwide.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <a href="#" onclick="showSection('home')">Home</a>
+                    <a href="#" onclick="showSection('restaurants')">Restaurants</a>
+                    <a href="#" onclick="showSection('products')">Products</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Support</h4>
+                    <a href="#">About Us</a>
+                    <a href="#">Contact</a>
+                    <a href="#">FAQ</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Halal Finder. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>
